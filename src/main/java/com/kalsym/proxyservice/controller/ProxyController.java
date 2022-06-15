@@ -10,6 +10,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -90,23 +92,26 @@ public class ProxyController {
                 }   
             }  
 
-            String regexUserAgent = "(.*)"+userAgent+"(.*)";
+            //https://stackoverflow.com/questions/23707566/how-do-i-sanitize-input-before-making-a-regex-out-of-it
+            //santize for matching pattern 
+            String sanitizedUserAgent = userAgent.replaceAll("[-.\\+*?\\[^\\]$(){}=!<>|/:\\\\]", "\\\\$0");
+            String regexSanitizedUserAgent =  ".*"+sanitizedUserAgent+".*";
 
-            for(int i=0; i<listdata.size(); i++) {  
+            //sanitize for matching instances
+            String sanitizedUserAgent1 = userAgent.replaceAll("[\\*?\\[^\\]${}=!<>|/\\\\]", "\\\\$0");
+            String sanitizedUserAgent2 = sanitizedUserAgent1.replaceAll("[ \\+*?\\[^\\]$(){}=!<>|/\\\\]", "\\\\$0");
+            String regexSanitizedUserAgent2 =  ".*"+sanitizedUserAgent2+".*";
 
-                if(listdata.get(i).toString().matches(regexUserAgent)){
-                    System.out.println("hello botttttttt");
+            for(int i=0; i<listdata.size(); i++) {
+
+
+                if(listdata.get(i).toString().matches(regexSanitizedUserAgent) || listdata.get(i).toString().matches(regexSanitizedUserAgent2) ){
+
+                    System.out.println(listdata.get(i).toString());
+
+                    System.out.println("HELLO BOTTTTTTTTT :::::::::::::");
+
                 }
-
-                // String string = listdata.get(i).toString();
-                // System.out.println("Checkingg KKKKKKKKKK"+string);
-
-                // String[] parts = string.split(" ");
-                // for(int j = 0; j < parts.length; i++) {
-                //     if(parts[i].equals(userAgent)) {
-                //         System.out.println("Hello Bot");
-                //     }
-                // }
               
             }  
 
