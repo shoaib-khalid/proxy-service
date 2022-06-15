@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -107,10 +109,23 @@ public class ProxyController {
 
                 if(listdata.get(i).toString().matches(regexSanitizedUserAgent) || listdata.get(i).toString().matches(regexSanitizedUserAgent2) ){
 
-                    System.out.println(listdata.get(i).toString());
+                    String content = 
+                    "<!DOCTYPE html>"
+                    + "<html lang='en'>"
+                    + "<head>"
+                    + "<meta charset='UTF-8'>"
+                    + "<meta http-equiv='X-UA-Compatible' content='IE=edge'>"
+                    + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+                    + "<title>Not Found</title>"
+                    + "</head>"
+                    + "<body>"
+                    + "<h1><span>You are bot</span></h1>"  
+                    + "</body>"
+                    + "</html>";
+                    HttpHeaders responseHeaders = new HttpHeaders();
+                    responseHeaders.setContentType(MediaType.TEXT_HTML);
 
-                    System.out.println("HELLO BOTTTTTTTTT :::::::::::::");
-
+                    return new ResponseEntity<String>(content, responseHeaders, HttpStatus.NOT_FOUND);
                 }
               
             }  
