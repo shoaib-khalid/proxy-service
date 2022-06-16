@@ -84,6 +84,7 @@ public class ProxyController {
 
             // See https://raw.githubusercontent.com/monperrus/crawler-user-agents/master/crawler-user-agents.json
             URL resource = getClass().getClassLoader().getResource("static/crawler-user-agents.json");
+            System.out.println("CHECKING  resource:::::::::::::"+resource);//later we use this variable to replace servicePort
 
             // File myFile = new File("target/classes/static/crawler-user-agents.json");
             // URL urlMyFile = myFile.toURI().toURL();
