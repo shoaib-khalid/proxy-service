@@ -1,4 +1,5 @@
 package com.kalsym.proxyservice.controller;
+import java.io.File;
 import java.io.FileReader;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -6,9 +7,11 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -20,12 +23,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.kalsym.proxyservice.model.PlatformConfig;
+import com.kalsym.proxyservice.service.PlatformConfigService;
+
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
 @RestController
 @RequestMapping("/")
 public class ProxyController {
+
+        
+    @Autowired
+    PlatformConfigService platformConfigService;
 
     // Get All
     @Value("${symplified.service.scheme}")
@@ -36,6 +46,32 @@ public class ProxyController {
     public ResponseEntity<String> mirrorRest( HttpMethod method, HttpServletRequest request) throws URISyntaxException
     {
         try {
+
+            List<PlatformConfig> body = platformConfigService.getQueryPlatformConfig(request.getServerName());
+
+            String kubernetessvcurl;
+            String kubernetessvcport;
+
+            if(body.size() > 0){
+                PlatformConfig platformconfig = body.get(0);
+                kubernetessvcurl = platformconfig.getKubernetesSvcUrl();
+                kubernetessvcport = platformconfig.getKubernetesSvcPort();
+            }
+            else{
+
+                int y= request.getServerName().indexOf(".");
+                String domain = request.getServerName().substring(y+1);// to split the string remove storename eg : cinema-online.symplified.test to symplified.test
+
+                String platformtype = "store-front";
+                List<PlatformConfig> bodyNew = platformConfigService.getQueryWildcardPlatformConfig(domain,platformtype);
+                PlatformConfig platformconfig = bodyNew.get(0);
+                kubernetessvcurl = platformconfig.getKubernetesSvcUrl();
+                kubernetessvcport = platformconfig.getKubernetesSvcPort();
+
+            }
+            System.out.println("CHECKING  kubernetessvcurl:::::::::::::"+kubernetessvcurl);//later we use this variable to replace request.getServerName()
+
+            System.out.println("CHECKING  kubernetessvcport:::::::::::::"+kubernetessvcport);//later we use this variable to replace servicePort
 
             //===============================
             RestTemplate restTemplate = new RestTemplate();
@@ -48,6 +84,11 @@ public class ProxyController {
 
             // See https://raw.githubusercontent.com/monperrus/crawler-user-agents/master/crawler-user-agents.json
             URL resource = getClass().getClassLoader().getResource("static/crawler-user-agents.json");
+
+            // File myFile = new File("target/classes/static/crawler-user-agents.json");
+            // URL urlMyFile = myFile.toURI().toURL();
+            // System.out.println("CHECKINGGGGGGG urlMyFile :::::::::::::::"+urlMyFile);
+
             //JSON parser object to parse read file
             JSONParser jsonParser = new JSONParser();
             FileReader reader = new FileReader(Paths.get(resource.toURI()).toFile());
@@ -59,8 +100,6 @@ public class ProxyController {
             ArrayList<Object> listdata = new ArrayList<Object>();  
 
             String userAgent = request.getHeader("User-Agent");
-            System.out.println("request.getServerName() : " + request.getServerName());
-
 
             if (crawlerList != null) {   
               
@@ -128,21 +167,11 @@ public class ProxyController {
             HashMap<String,String> httpHeader = new HashMap<>();
             httpHeader.put("Content-Type", "application/json");
 
-            // =======================
-            // to be dispay if user agent is bot or human
-            // =======================
-            // boolean deviceHeaderExists = request.getHeader("User-Agent") != null;
-            // if (deviceHeaderExists) {
-            //     System.out.println("Masuk you r bot ::::::::::::" + getUserAgent(request));
-            //     // "you r robot"; send simple htm you are robot ()
-            // } else {
-            //     System.out.println("X masuk"); //html biasa keluarkan 
-            // }
-
             return responseEntity;
 
         } catch (Exception error) {
             System.out.println("An error has occured : " + error.getMessage());
+            // error.printStackTrace();
 
             String content = 
             "<!DOCTYPE html>"
