@@ -42,6 +42,10 @@ public class ProxyController {
     String serviceScheme;
     @Value("${symplified.service.port}")
     Integer servicePort;
+
+    @Value("${spring.profiles.active}")
+    String env;
+
     @GetMapping(value={"**"})
     public ResponseEntity<String> mirrorRest( HttpMethod method, HttpServletRequest request) throws URISyntaxException
     {
@@ -73,9 +77,29 @@ public class ProxyController {
 
             System.out.println("CHECKING  kubernetessvcport:::::::::::::"+kubernetessvcport);//later we use this variable to replace servicePort
 
+
+            String url ;
+            Integer port;
+            String scheme;
+  
+
+            if (env.equals("dev")) {
+                System.out.println("ini develompenenntrnrthnrthnr");
+                url = request.getServerName();
+                port = servicePort;
+                scheme = request.getScheme();
+            } else {
+                // prod or staging
+                url = kubernetessvcurl;
+                port = Integer.valueOf(kubernetessvcport);
+                scheme = serviceScheme;
+            }
+
             //===============================
             RestTemplate restTemplate = new RestTemplate();
-            URI uri = new URI(request.getScheme(), null, request.getServerName(), servicePort, request.getRequestURI(), request.getQueryString(), null);               
+            URI uri = new URI(scheme, null, url, port, request.getRequestURI(), request.getQueryString(), null); 
+            // URI uri = new URI(request.getScheme(), null, request.getServerName(), servicePort, request.getRequestURI(), request.getQueryString(), null);               
+              
             ResponseEntity<String> responseEntity = restTemplate.exchange(uri, method, null, String.class);
             // ResponseEntity<String> responseEntity = restTemplate.getForEntity(uri, String.class);
             // =======================
@@ -101,6 +125,8 @@ public class ProxyController {
             ArrayList<Object> listdata = new ArrayList<Object>();  
 
             String userAgent = request.getHeader("User-Agent");
+            System.out.println("CHECKING  header User-Agent:::::::::::::"+userAgent);//later we use this variable to replace servicePort
+
 
             if (crawlerList != null) {   
               
