@@ -5,13 +5,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,25 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.deevvi.device.detector.engine.api.DeviceDetectorParser;
-import com.deevvi.device.detector.engine.api.DeviceDetectorResult;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.kalsym.proxyservice.model.Crawler;
-import com.kalsym.proxyservice.utility.HttpResult;
-import com.kalsym.proxyservice.utility.HttpsPostConn;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 @RestController
 @RequestMapping("/")
@@ -82,6 +59,7 @@ public class ProxyController {
             ArrayList<Object> listdata = new ArrayList<Object>();  
 
             String userAgent = request.getHeader("User-Agent");
+            System.out.println("request.getServerName() : " + request.getServerName());
 
 
             if (crawlerList != null) {   
@@ -165,7 +143,24 @@ public class ProxyController {
 
         } catch (Exception error) {
             System.out.println("An error has occured : " + error.getMessage());
-            return null;
+
+            String content = 
+            "<!DOCTYPE html>"
+            + "<html lang='en'>"
+            + "<head>"
+            + "<meta charset='UTF-8'>"
+            + "<meta http-equiv='X-UA-Compatible' content='IE=edge'>"
+            + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+            + "<title>Something went wrong</title>"
+            + "</head>"
+            + "<body>"
+            + "<p>" + error.getMessage() + "</p>"  
+            + "</body>"
+            + "</html>";
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.setContentType(MediaType.TEXT_HTML);
+
+            return new ResponseEntity<String>(content, responseHeaders, HttpStatus.NOT_FOUND);
         }       
     }
 
