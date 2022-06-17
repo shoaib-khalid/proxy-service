@@ -1,13 +1,8 @@
 package com.kalsym.proxyservice.controller;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,9 +21,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.kalsym.proxyservice.enums.StoreAssetType;
 import com.kalsym.proxyservice.model.PlatformConfig;
+import com.kalsym.proxyservice.model.Store;
+import com.kalsym.proxyservice.model.StoreAssets;
 import com.kalsym.proxyservice.service.PlatformConfigService;
+import com.kalsym.proxyservice.service.StoreService;
 import com.kalsym.proxyservice.utility.LogUtil;
 
 import org.json.simple.JSONArray;
@@ -41,6 +39,9 @@ public class ProxyController {
         
     @Autowired
     PlatformConfigService platformConfigService;
+
+    @Autowired
+    StoreService storeService;
 
     // Get All
     @Value("${symplified.service.scheme}")
@@ -65,6 +66,12 @@ public class ProxyController {
             String kubernetessvcport;
             String platformname;
             String platformlogo;
+            String substringStoreDomain = null;
+            String storeLogo = null;
+            String storename = null;
+            String storedescription = null;
+
+
 
             String ogDescription = "Order your food, beverages and daily essentials from our local heroes" ;
 
@@ -79,6 +86,7 @@ public class ProxyController {
 
                 int y= request.getServerName().indexOf(".");
                 String domain = request.getServerName().substring(y+1);// to split the string remove storename eg : cinema-online.symplified.test to symplified.test
+                substringStoreDomain = request.getServerName().substring(0,y);//cinema-online
 
                 String platformtype = "store-front";
                 List<PlatformConfig> bodyNew = platformConfigService.getQueryWildcardPlatformConfig(domain,platformtype);
@@ -88,6 +96,21 @@ public class ProxyController {
                 platformname = platformconfig.getPlatformName();
                 platformlogo = platformconfig.getPlatformLogo();
 
+
+                List<Store> storeDetails = storeService.getStore(substringStoreDomain);
+                Store store = storeDetails.get(0);
+                storename = store.getName();
+                storedescription = store.getStoreDescription().replaceAll("<[^>]*>", "").replaceAll("'", "");//sanitize html tag and remove ' 
+                // System.out.println("CHECKING  storeDetails:::::::::::::"+store.getStoreAssets().stream().map(m->{ StoreAssets storeasset = m.getAssetType(StoreAssetType.LogoUrl); return storeasset;}).collect(Collectors.toList()));//later we use this variable to replace request.getServerName()
+
+                StoreAssets storeasset = store.getStoreAssets().stream()
+                .filter(m -> StoreAssetType.LogoUrl.equals(m.getAssetType()))
+                .findAny()
+                .orElse(null);
+
+                storeLogo = storeasset.getAssetUrl();
+                System.out.println("Checking storeasset ::::::::"+storeasset);
+                System.out.println("Checking storeLogo ::::::::"+storeLogo);
 
 
             }
@@ -165,30 +188,59 @@ public class ProxyController {
             String regexSanitizedUserAgent2 =  ".*"+sanitizedUserAgent2+".*";
 
 
+            String content ;
+            HttpHeaders responseHeaders;
+
             for(int i=0; i<listdata.size(); i++) {
 
 
                 if(listdata.get(i).toString().matches(regexSanitizedUserAgent) || listdata.get(i).toString().matches(regexSanitizedUserAgent2) ){
                     
-                    String content = 
-                    "<!DOCTYPE html>"
-                    + "<html lang='en'>"
-                    + "<head>"
-                    + "<meta charset='UTF-8'>"
-                    + "<meta http-equiv='X-UA-Compatible' content='IE=edge'>"
-                    + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-                    + "<meta property='og:title' content='" + platformname + "' />"
-                    + "<meta property='og:description' content='" + ogDescription + "' />"
-                    + "<meta property='og:url' content='" + kubernetessvcurl + "' />"
-                    + "<meta property='og:image' content='" + platformlogo + "' />"
-                    + "<title>" + platformname + "</title>"
-                    + "</head>"
-                    + "<body>"
-                    + "<h1>Welcome to " + platformname + "</h1>"  
-                    + "</body>"
-                    + "</html>";
-                    HttpHeaders responseHeaders = new HttpHeaders();
-                    responseHeaders.setContentType(MediaType.TEXT_HTML);
+                    if(substringStoreDomain ==null){
+                        content = 
+                        "<!DOCTYPE html>"
+                        + "<html lang='en'>"
+                        + "<head>"
+                        + "<meta charset='UTF-8'>"
+                        + "<meta http-equiv='X-UA-Compatible' content='IE=edge'>"
+                        + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+                        + "<meta property='og:title' content='Welcome to " + platformname + "' />"
+                        + "<meta property='og:description' content='" + ogDescription + "' />"
+                        + "<meta property='og:url' content='" + kubernetessvcurl + "' />"
+                        + "<meta property='og:image' content='" + platformlogo + "' />"
+                        + "<title>" + platformname + "</title>"
+                        + "</head>"
+                        + "<body>"
+                        + "<h1>Welcome to " + platformname + "</h1>"  
+                        + "</body>"
+                        + "</html>";
+                        responseHeaders = new HttpHeaders();
+                        responseHeaders.setContentType(MediaType.TEXT_HTML);
+
+                    }else{
+
+                        content = 
+                        "<!DOCTYPE html>"
+                        + "<html lang='en'>"
+                        + "<head>"
+                        + "<meta charset='UTF-8'>"
+                        + "<meta http-equiv='X-UA-Compatible' content='IE=edge'>"
+                        + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+                        + "<meta property='og:title' content='Welcome to " + storename + "' />"
+                        + "<meta property='og:description' content='" + storedescription + "' />"
+                        + "<meta property='og:url' content='" + kubernetessvcurl + "' />"
+                        + "<meta property='og:image' content='" + storeLogo + "' />"
+                        + "<title>" + storename + "</title>"
+                        + "</head>"
+                        + "<body>"
+                        + "<h1>Welcome to " + storename + "</h1>"  
+                        + "</body>"
+                        + "</html>";
+                        responseHeaders = new HttpHeaders();
+                        responseHeaders.setContentType(MediaType.TEXT_HTML);
+
+                    }
+        
 
                     return new ResponseEntity<String>(content, responseHeaders, HttpStatus.OK);
                 }
