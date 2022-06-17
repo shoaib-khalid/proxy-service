@@ -1,6 +1,9 @@
 package com.kalsym.proxyservice.controller;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.kalsym.proxyservice.model.PlatformConfig;
 import com.kalsym.proxyservice.service.PlatformConfigService;
 
@@ -45,6 +49,9 @@ public class ProxyController {
 
     @Value("${spring.profiles.active}")
     String env;
+
+    @Value("${crawler.file.path}")
+    String crawlerFile;
 
     @GetMapping(value={"**"})
     public ResponseEntity<String> mirrorRest( HttpMethod method, HttpServletRequest request) throws URISyntaxException
@@ -107,16 +114,12 @@ public class ProxyController {
             // =======================
 
             // See https://raw.githubusercontent.com/monperrus/crawler-user-agents/master/crawler-user-agents.json
-            URL resource = getClass().getClassLoader().getResource("static/crawler-user-agents.json");
-            System.out.println("CHECKING  resource:::::::::::::"+resource);//later we use this variable to replace servicePort
-
-            // File myFile = new File("target/classes/static/crawler-user-agents.json");
-            // URL urlMyFile = myFile.toURI().toURL();
-            // System.out.println("CHECKINGGGGGGG urlMyFile :::::::::::::::"+urlMyFile);
+            // URL resource = getClass().getClassLoader().getResource(crawlerFile);
+            File file = new File(crawlerFile);
 
             //JSON parser object to parse read file
             JSONParser jsonParser = new JSONParser();
-            FileReader reader = new FileReader(Paths.get(resource.toURI()).toFile());
+            FileReader reader = new FileReader(file);
             //Read JSON file
             Object obj = jsonParser.parse(reader);
             JSONArray crawlerList = (JSONArray) obj;
@@ -173,23 +176,6 @@ public class ProxyController {
                 }
               
             }  
-
-            // =======================
-            // deevvicom/device-detector https://github.com/deevvicom/device-detector : this solution will infinite load the site
-            // =======================
-            // String userAgent = request.getHeader("User-Agent");
-
-            // DeviceDetectorParser parser = DeviceDetectorParser.getClient();
-            // DeviceDetectorResult result = parser.parse(userAgent);
-
-            // System.out.println("Result found: " + result.found());
-            // System.out.println("User-agent is mobile: " + result.isMobileDevice());
-            // System.out.println("User-agent is bot: " + result.isBot());
-            // System.out.println("Result as JSON: " + result.toJSON());
-            
-            // =======================
-            //
-            // =======================
 
             HashMap<String,String> httpHeader = new HashMap<>();
             httpHeader.put("Content-Type", "application/json");
