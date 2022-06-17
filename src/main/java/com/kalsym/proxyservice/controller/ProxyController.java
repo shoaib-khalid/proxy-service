@@ -188,6 +188,10 @@ public class ProxyController {
         } catch (Exception error) {
             System.out.println("An error has occured : " + error.getMessage());
             // error.printStackTrace();
+            String location = "ProxyController";
+
+            LogUtil.warn("", location, "Response with  Error" , error.getMessage());
+
 
             String content = 
             "<!DOCTYPE html>"
