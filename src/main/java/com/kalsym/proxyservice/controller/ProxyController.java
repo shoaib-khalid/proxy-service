@@ -209,7 +209,7 @@ public class ProxyController {
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.setContentType(MediaType.TEXT_HTML);
 
-            return new ResponseEntity<String>(content, responseHeaders, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<String>(content, responseHeaders, HttpStatus.OK);
         }       
     }
 
