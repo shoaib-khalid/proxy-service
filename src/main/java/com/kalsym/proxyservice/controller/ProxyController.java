@@ -63,11 +63,17 @@ public class ProxyController {
 
             String kubernetessvcurl;
             String kubernetessvcport;
+            String platformname;
+            String platformlogo;
+
+            String ogDescription = "Order your food, beverages and daily essentials from our local heroes" ;
 
             if(body.size() > 0){
                 PlatformConfig platformconfig = body.get(0);
                 kubernetessvcurl = platformconfig.getKubernetesSvcUrl();
                 kubernetessvcport = platformconfig.getKubernetesSvcPort();
+                platformname = platformconfig.getPlatformName();
+                platformlogo = platformconfig.getPlatformLogo();
             }
             else{
 
@@ -79,6 +85,10 @@ public class ProxyController {
                 PlatformConfig platformconfig = bodyNew.get(0);
                 kubernetessvcurl = platformconfig.getKubernetesSvcUrl();
                 kubernetessvcport = platformconfig.getKubernetesSvcPort();
+                platformname = platformconfig.getPlatformName();
+                platformlogo = platformconfig.getPlatformLogo();
+
+
 
             }
             System.out.println("CHECKING  kubernetessvcurl:::::::::::::"+kubernetessvcurl);//later we use this variable to replace request.getServerName()
@@ -154,11 +164,12 @@ public class ProxyController {
             String sanitizedUserAgent2 = sanitizedUserAgent1.replaceAll("[ \\+*?\\[^\\]$(){}=!<>|/\\\\]", "\\\\$0");
             String regexSanitizedUserAgent2 =  ".*"+sanitizedUserAgent2+".*";
 
+
             for(int i=0; i<listdata.size(); i++) {
 
 
                 if(listdata.get(i).toString().matches(regexSanitizedUserAgent) || listdata.get(i).toString().matches(regexSanitizedUserAgent2) ){
-
+                    
                     String content = 
                     "<!DOCTYPE html>"
                     + "<html lang='en'>"
@@ -166,10 +177,14 @@ public class ProxyController {
                     + "<meta charset='UTF-8'>"
                     + "<meta http-equiv='X-UA-Compatible' content='IE=edge'>"
                     + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-                    + "<title>Not Found</title>"
+                    + "<meta property='og:title' content='" + platformname + "' />"
+                    + "<meta property='og:description' content='" + ogDescription + "' />"
+                    + "<meta property='og:url' content='" + kubernetessvcurl + "' />"
+                    + "<meta property='og:image' content='" + platformlogo + "' />"
+                    + "<title>" + platformname + "</title>"
                     + "</head>"
                     + "<body>"
-                    + "<h1><span>You are bot</span></h1>"  
+                    + "<h1>Welcome to " + platformname + "</h1>"  
                     + "</body>"
                     + "</html>";
                     HttpHeaders responseHeaders = new HttpHeaders();

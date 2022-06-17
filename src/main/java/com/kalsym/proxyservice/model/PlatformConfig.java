@@ -26,6 +26,8 @@ public class PlatformConfig {
 
     private String platformType;
 
+    private String platformLogo;
+
     private String domain;
 
     private String kubernetesSvcUrl;
