@@ -29,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.kalsym.proxyservice.model.PlatformConfig;
 import com.kalsym.proxyservice.service.PlatformConfigService;
+import com.kalsym.proxyservice.utility.LogUtil;
 
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -126,10 +127,12 @@ public class ProxyController {
 
             //Converting jsonData string into JSON object  
             ArrayList<Object> listdata = new ArrayList<Object>();  
-
+            String location = "ProxyController";
             String userAgent = request.getHeader("User-Agent");
             System.out.println("CHECKING  header User-Agent:::::::::::::"+userAgent);//later we use this variable to replace servicePort
-
+            LogUtil.info("", location, "Response with  User-Agent" , userAgent);
+            LogUtil.info("", location, "Response with kubernetessvcurl", kubernetessvcurl);
+            LogUtil.info("", location, "Response with kubernetessvcport ", kubernetessvcport);
 
             if (crawlerList != null) {   
               
