@@ -98,21 +98,34 @@ public class ProxyController {
 
 
                 List<Store> storeDetails = storeService.getStore(substringStoreDomain);
-                Store store = storeDetails.get(0);
-                storename = store.getName();
-                storedescription = store.getStoreDescription().replaceAll("<[^>]*>", "").replaceAll("'", "");//sanitize html tag and remove ' 
-                // System.out.println("CHECKING  storeDetails:::::::::::::"+store.getStoreAssets().stream().map(m->{ StoreAssets storeasset = m.getAssetType(StoreAssetType.LogoUrl); return storeasset;}).collect(Collectors.toList()));//later we use this variable to replace request.getServerName()
+                if(storeDetails.size()>0){
 
-                StoreAssets storeasset = store.getStoreAssets().stream()
-                .filter(m -> StoreAssetType.LogoUrl.equals(m.getAssetType()))
-                .findAny()
-                .orElse(null);
+                    Store store = storeDetails.get(0);
+                    storename = store.getName();
+                    storedescription = store.getStoreDescription().replaceAll("<[^>]*>", "").replaceAll("'", "");//sanitize html tag and remove ' 
+                    // System.out.println("CHECKING  storeDetails:::::::::::::"+store.getStoreAssets().stream().map(m->{ StoreAssets storeasset = m.getAssetType(StoreAssetType.LogoUrl); return storeasset;}).collect(Collectors.toList()));//later we use this variable to replace request.getServerName()
+    
+                    StoreAssets storeasset = store.getStoreAssets().stream()
+                    .filter(m -> StoreAssetType.LogoUrl.equals(m.getAssetType()))
+                    .findAny()
+                    .orElse(null);
 
-                if(storeasset == null){
-                    storeLogo = platformlogo;
+                    
+                    if(storeasset == null){
+                        storeLogo = platformlogo;
+                    } else{
+                        storeLogo = storeasset.getAssetUrl();
+                        
+                    }
+
                 } else{
-                    storeLogo = storeasset.getAssetUrl();
+
+                    storename = platformname;
+                    storedescription = platformname;
+                    storeLogo = platformname;
                 }
+      
+
 
             }
             System.out.println("CHECKING  kubernetessvcurl:::::::::::::"+kubernetessvcurl);//later we use this variable to replace request.getServerName()
