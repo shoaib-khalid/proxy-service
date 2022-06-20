@@ -108,10 +108,11 @@ public class ProxyController {
                 .findAny()
                 .orElse(null);
 
-                storeLogo = storeasset.getAssetUrl();
-                System.out.println("Checking storeasset ::::::::"+storeasset);
-                System.out.println("Checking storeLogo ::::::::"+storeLogo);
-
+                if(storeasset == null){
+                    storeLogo = platformlogo;
+                } else{
+                    storeLogo = storeasset.getAssetUrl();
+                }
 
             }
             System.out.println("CHECKING  kubernetessvcurl:::::::::::::"+kubernetessvcurl);//later we use this variable to replace request.getServerName()
