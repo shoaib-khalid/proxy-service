@@ -275,7 +275,7 @@ public class ProxyController {
             acceptrangelist = Collections.unmodifiableList(acceptrangelist);
 
             //since front end using their own assets folder we need to handle this 
-            if(((responseEntity.getHeaders().getContentType().equals(MediaType.IMAGE_JPEG) || responseEntity.getHeaders().getContentType().equals(MediaType.IMAGE_PNG))) && responseEntity.getHeaders().get("Accept-Ranges").containsAll(acceptrangelist) ){
+            if(((responseEntity.getHeaders().getContentType().equals(MediaType.IMAGE_JPEG) || responseEntity.getHeaders().getContentType().equals(MediaType.IMAGE_PNG) || responseEntity.getHeaders().getContentType().equals(MediaType.IMAGE_GIF))) && responseEntity.getHeaders().get("Accept-Ranges").containsAll(acceptrangelist) ){
                 // return responseEntity;
 
                 // ByteArrayResource inputStream = responseEntity.getBody().getBytes();
