@@ -4,13 +4,18 @@ import java.io.FileReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -56,7 +61,7 @@ public class ProxyController {
     String crawlerFile;
 
     @GetMapping(value={"**"})
-    public ResponseEntity<String> mirrorRest( HttpMethod method, HttpServletRequest request) throws URISyntaxException
+    public ResponseEntity<?> mirrorRest( HttpMethod method, HttpServletRequest request) throws URISyntaxException
     {
         try {
 
@@ -156,6 +161,7 @@ public class ProxyController {
             // URI uri = new URI(request.getScheme(), null, request.getServerName(), servicePort, request.getRequestURI(), request.getQueryString(), null);               
               
             ResponseEntity<String> responseEntity = restTemplate.exchange(uri, method, null, String.class);
+
             // ResponseEntity<String> responseEntity = restTemplate.getForEntity(uri, String.class);
             // =======================
             // Bot Crawler
@@ -264,7 +270,32 @@ public class ProxyController {
             HashMap<String,String> httpHeader = new HashMap<>();
             httpHeader.put("Content-Type", "application/json");
 
-            return responseEntity;
+                    
+            List<String> acceptrangelist = Arrays.asList("bytes");
+            acceptrangelist = Collections.unmodifiableList(acceptrangelist);
+
+            //since front end using their own assets folder we need to handle this 
+            if(((responseEntity.getHeaders().getContentType().equals(MediaType.IMAGE_JPEG) || responseEntity.getHeaders().getContentType().equals(MediaType.IMAGE_PNG))) && responseEntity.getHeaders().get("Accept-Ranges").containsAll(acceptrangelist) ){
+                // return responseEntity;
+
+                // ByteArrayResource inputStream = responseEntity.getBody().getBytes();
+                
+        
+                // return ResponseEntity
+                //         .status(HttpStatus.OK)
+                //         .contentLength(inputStream.contentLength())
+                //         .body(inputStream); 
+                // System.out.println("get body()::::::::"+responseEntity.getBody());
+
+                ResponseEntity<byte[]> responseEntityWithByte = restTemplate.exchange(uri, method, null, byte[].class);
+
+
+                return responseEntityWithByte;
+
+            } else{
+                return responseEntity;
+            }
+
 
         } catch (Exception error) {
             System.out.println("An error has occured : " + error.getMessage());
