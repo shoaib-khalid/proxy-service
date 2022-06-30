@@ -60,6 +60,9 @@ public class ProxyController {
     @Value("${crawler.file.path}")
     String crawlerFile;
 
+    @Value("${asset.service.url}")
+    String assetServiceUrl;
+
     @GetMapping(value={"**"})
     public ResponseEntity<?> mirrorRest( HttpMethod method, HttpServletRequest request) throws URISyntaxException
     {
@@ -85,7 +88,7 @@ public class ProxyController {
                 kubernetessvcurl = platformconfig.getKubernetesSvcUrl();
                 kubernetessvcport = platformconfig.getKubernetesSvcPort();
                 platformname = platformconfig.getPlatformName();
-                platformlogo = platformconfig.getPlatformLogo();
+                platformlogo = assetServiceUrl+platformconfig.getPlatformLogo();
             }
             else{
 
@@ -99,7 +102,7 @@ public class ProxyController {
                 kubernetessvcurl = platformconfig.getKubernetesSvcUrl();
                 kubernetessvcport = platformconfig.getKubernetesSvcPort();
                 platformname = platformconfig.getPlatformName();
-                platformlogo = platformconfig.getPlatformLogo();
+                platformlogo = assetServiceUrl+platformconfig.getPlatformLogo();
 
 
                 List<Store> storeDetails = storeService.getStore(substringStoreDomain);
@@ -108,7 +111,6 @@ public class ProxyController {
                     Store store = storeDetails.get(0);
                     storename = store.getName();
                     storedescription = store.getStoreDescription().replaceAll("<[^>]*>", "").replaceAll("'", "");//sanitize html tag and remove ' 
-                    // System.out.println("CHECKING  storeDetails:::::::::::::"+store.getStoreAssets().stream().map(m->{ StoreAssets storeasset = m.getAssetType(StoreAssetType.LogoUrl); return storeasset;}).collect(Collectors.toList()));//later we use this variable to replace request.getServerName()
     
                     StoreAssets storeasset = store.getStoreAssets().stream()
                     .filter(m -> StoreAssetType.LogoUrl.equals(m.getAssetType()))
@@ -133,10 +135,6 @@ public class ProxyController {
 
 
             }
-            System.out.println("CHECKING  kubernetessvcurl:::::::::::::"+kubernetessvcurl);//later we use this variable to replace request.getServerName()
-
-            System.out.println("CHECKING  kubernetessvcport:::::::::::::"+kubernetessvcport);//later we use this variable to replace servicePort
-
 
             String url ;
             Integer port;
@@ -144,7 +142,6 @@ public class ProxyController {
   
 
             if (env.equals("dev")) {
-                System.out.println("ini develompenenntrnrthnrthnr");
                 url = request.getServerName();
                 port = servicePort;
                 scheme = request.getScheme();
@@ -182,7 +179,6 @@ public class ProxyController {
             ArrayList<Object> listdata = new ArrayList<Object>();  
             String location = "ProxyController";
             String userAgent = request.getHeader("User-Agent");
-            System.out.println("CHECKING  header User-Agent:::::::::::::"+userAgent);//later we use this variable to replace servicePort
             LogUtil.info("", location, "Response with  User-Agent" , userAgent);
             LogUtil.info("", location, "Response with kubernetessvcurl", kubernetessvcurl);
             LogUtil.info("", location, "Response with kubernetessvcport ", kubernetessvcport);
@@ -238,7 +234,7 @@ public class ProxyController {
                         responseHeaders.setContentType(MediaType.TEXT_HTML);
 
                     }else{
-
+                        //for store front
                         content = 
                         "<!DOCTYPE html>"
                         + "<html lang='en'>"
