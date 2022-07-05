@@ -1,19 +1,10 @@
 ##################################################
-# location-service-1.0.1 | 18-Feb-2022
+# proxy-service-1.0.1 | 4-July-2022
 ##################################################
-```
-PLEASE FOLLOW BELOW FORMAT IN ORDER TO UPDATE VERSION IN RELEASE NOTE
-```
-1. Add new field : displayAddress in store table
-
-##Database changes :
-ALTER TABLE `store` ADD displayAddress VARCHAR(1000);
+1. Change url servoce for logo
 
 ##################################################
-# location-service-1.0.2 | 18-Feb-2022
+# proxy-service-0.0.1-SNAPSHOT | 22-June-2022
 ##################################################
-1. Add new field in discount : isExpired
-if discount end date < current date, then isExpired=true
-
-
-
+1. Implement proxy service for OG meta tag
+2. update whatsapp version for crawling

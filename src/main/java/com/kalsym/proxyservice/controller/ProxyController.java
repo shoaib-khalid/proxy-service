@@ -121,7 +121,7 @@ public class ProxyController {
                     if(storeasset == null){
                         storeLogo = platformlogo;
                     } else{
-                        storeLogo = storeasset.getAssetUrl();
+                        storeLogo = assetServiceUrl+storeasset.getAssetUrl();
                         
                     }
 
