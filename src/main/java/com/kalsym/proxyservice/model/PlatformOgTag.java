@@ -12,29 +12,25 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @Getter
 @Setter
 @Entity
-@Table(name = "platform_config")
+@Table(name = "platform_og_tag")
 @ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.ALWAYS)
 
-public class PlatformConfig {
+public class PlatformOgTag {
     
     @Id
-    private String platformId;
+    private Integer id;
 
-    private String platformName;
+    private String title;
+
+    private String description;
+
+    private String imageUrl;
 
     private String platformType;
 
-    private String platformLogo;
-
-    private String platformCountry;
-
-    private String domain;
-
-    private String kubernetesSvcUrl;
-
-    private String kubernetesSvcPort;
+    private String regionCountryId;
 
 }
 
