@@ -116,7 +116,7 @@ public class ProxyController {
                     PlatformOgTag platformOgTagDetail = platformogTag.get(0);
                     ogDescription = platformOgTagDetail.getDescription();
                     ogTitle = platformOgTagDetail.getTitle();
-                    ogImageUrl = platformOgTagDetail.getImageUrl();
+                    ogImageUrl = assetServiceUrl+platformOgTagDetail.getImageUrl();
                     headTitle = platformOgTagDetail.getTitle();
 
 
