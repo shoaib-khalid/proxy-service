@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -75,6 +76,20 @@ public class ProxyController {
 
             List<PlatformConfig> body = platformConfigService.getQueryPlatformConfig(request.getServerName());//param domain
             System.out.println("Checking request.getServerName():::::"+request.getServerName());
+
+            // Enumeration<String> headerNames = request.getHeaderNames();
+
+            // if (headerNames != null) {
+            //         while (headerNames.hasMoreElements()) {
+            //                 System.out.println("Header: " + request.getHeader(headerNames.nextElement()));
+            //                 LogUtil.info("", "PROXY", "Response with  request" , headerNames.toString());
+
+            //         }
+            // }
+
+            LogUtil.info("", "PROXY", "Response with  authority" , request.getHeader("authority"));
+            LogUtil.info("", "PROXY", "Response with  referrer" , request.getHeader("referrer"));
+
 
             String kubernetessvcurl;
             String kubernetessvcport;

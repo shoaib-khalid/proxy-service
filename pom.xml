@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.kalsym</groupId>
 	<artifactId>proxy-service</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<name>proxy-service</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
