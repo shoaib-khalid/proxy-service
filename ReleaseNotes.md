@@ -1,7 +1,18 @@
 ##################################################
+# proxy-service-1.0.4 | 15-July-2022
+##################################################
+ALTER TABLE symplified.platform_og_tag ADD property varchar(100) NULL;
+ALTER TABLE symplified.platform_og_tag ADD content varchar(500) NULL;
+ALTER TABLE symplified.platform_og_tag ADD name varchar(100) NULL;
+ALTER TABLE symplified.platform_og_tag ADD platformId varchar(50) NULL;
+
+ALTER TABLE symplified.platform_og_tag ADD CONSTRAINT platform_og_tag_FK FOREIGN KEY (platformId) REFERENCES symplified.platform_config(platformId) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+##################################################
 # proxy-service-1.0.3 | 8-July-2022
 ##################################################
 1. Print log
+
 ##################################################
 # proxy-service-1.0.2 | 7-July-2022
 ##################################################

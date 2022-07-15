@@ -109,7 +109,8 @@ public class ProxyController {
             String ogImageUrl = "";
             String headTitle = "";
 
-
+            Boolean isPlatformOgTagData = false ; // we set this to true if there is data from platfrom og tag
+            String  injectMetaTag = "";
 
             if(body.size() > 0){
                 PlatformConfig platformconfig = body.get(0);
@@ -123,18 +124,32 @@ public class ProxyController {
                 headTitle = platformname;
                 
                 //get platformOgTag details
-                List<PlatformOgTag> platformogTag = platformOgTagRepository.findByPlatformTypeAndRegionCountryId(platformconfig.getPlatformType(),platformconfig.getPlatformCountry());
+                List<PlatformOgTag> platformogTag = platformOgTagRepository.findByPlatformId(platformconfig.getPlatformId());
 
                 //get platformOgTag details
                 if(platformogTag.size() > 0){
+                    
+                    isPlatformOgTagData = true;
 
-                    PlatformOgTag platformOgTagDetail = platformogTag.get(0);
-                    ogDescription = platformOgTagDetail.getDescription();
-                    ogTitle = platformOgTagDetail.getTitle();
-                    ogImageUrl = assetServiceUrl+platformOgTagDetail.getImageUrl();
-                    headTitle = platformOgTagDetail.getTitle();
+                    // PlatformOgTag platformOgTagDetail = platformogTag.get(0);
+                    // ogDescription = platformOgTagDetail.getDescription();
+                    // ogTitle = platformOgTagDetail.getTitle();
+                    // ogImageUrl = assetServiceUrl+platformOgTagDetail.getImageUrl();
+                    // headTitle = platformOgTagDetail.getTitle();
 
+                    for(PlatformOgTag pTag:platformogTag){
 
+                        injectMetaTag += "<meta property='" + pTag.getProperty() + "' content='" + pTag.getContent() + "' name='" + pTag.getName() + "' />";
+                    }
+
+                    // platformogTag.getStoreAssets().stream()
+                    PlatformOgTag platformOgTagTitle = platformogTag.stream()
+                    .filter(m -> m.getProperty().equals("og:title"))
+                    .findAny()
+                    .orElse(null);
+
+                    ogTitle = platformOgTagTitle.getContent();
+                    headTitle = platformOgTagTitle.getContent();
                 }
 
             }
@@ -269,23 +284,42 @@ public class ProxyController {
 
                 if(listdata.get(i).toString().matches(regexSanitizedUserAgent) || listdata.get(i).toString().matches(regexSanitizedUserAgent2) ){
                     
-                    content = 
-                    "<!DOCTYPE html>"
-                    + "<html lang='en'>"
-                    + "<head>"
-                    + "<meta charset='UTF-8'>"
-                    + "<meta http-equiv='X-UA-Compatible' content='IE=edge'>"
-                    + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-                    + "<meta property='og:title' content='" + ogTitle + "' />"
-                    + "<meta property='og:description' content='" + ogDescription + "' />"
-                    + "<meta property='og:url' content='" + ogUrl + "' />"
-                    + "<meta property='og:image' content='" + ogImageUrl + "' />"
-                    + "<title>" + ogTitle + "</title>"
-                    + "</head>"
-                    + "<body>"
-                    + "<h1>" + headTitle + "</h1>"  
-                    + "</body>"
-                    + "</html>";
+                    if(isPlatformOgTagData == true){
+
+                        content = 
+                        "<!DOCTYPE html>"
+                        + "<html lang='en'>"
+                        + "<head>"
+                        + injectMetaTag
+                        + "<title>" + ogTitle + "</title>"
+                        + "</head>"
+                        + "<body>"
+                        + "<h1>" + headTitle + "</h1>"  
+                        + "</body>"
+                        + "</html>";
+
+                    }
+                    else{
+
+                        content = 
+                        "<!DOCTYPE html>"
+                        + "<html lang='en'>"
+                        + "<head>"
+                        + "<meta charset='UTF-8'>"
+                        + "<meta http-equiv='X-UA-Compatible' content='IE=edge'>"
+                        + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+                        + "<meta property='og:title' content='" + ogTitle + "' />"
+                        + "<meta property='og:description' content='" + ogDescription + "' />"
+                        + "<meta property='og:url' content='" + ogUrl + "' />"
+                        + "<meta property='og:image' content='" + ogImageUrl + "' />"
+                        + "<title>" + ogTitle + "</title>"
+                        + "</head>"
+                        + "<body>"
+                        + "<h1>" + headTitle + "</h1>"  
+                        + "</body>"
+                        + "</html>";
+                    }
+         
                     responseHeaders = new HttpHeaders();
                     responseHeaders.setContentType(MediaType.TEXT_HTML);
         

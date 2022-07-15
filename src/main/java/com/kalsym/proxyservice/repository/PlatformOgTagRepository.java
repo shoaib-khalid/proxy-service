@@ -15,7 +15,9 @@ import com.kalsym.proxyservice.model.PlatformOgTag;
 @Repository
 public interface PlatformOgTagRepository extends JpaRepository<PlatformOgTag,String> {
     
-    List<PlatformOgTag> findByPlatformTypeAndRegionCountryId(@Param("platformType") String platformType, @Param("regionCountryId") String regionCountryId);
+    // List<PlatformOgTag> findByPlatformTypeAndRegionCountryId(@Param("platformType") String platformType, @Param("regionCountryId") String regionCountryId);
+    
+    List<PlatformOgTag> findByPlatformId(@Param("platformId") String platformId);
 
    
 }
