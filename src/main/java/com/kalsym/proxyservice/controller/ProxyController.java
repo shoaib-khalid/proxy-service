@@ -139,7 +139,16 @@ public class ProxyController {
 
                     for(PlatformOgTag pTag:platformogTag){
 
-                        injectMetaTag += "<meta property='" + pTag.getProperty() + "' content='" + pTag.getContent() + "' name='" + pTag.getName() + "' />";
+                        String property = pTag.getProperty() != null ? " property='" + pTag.getProperty()+"'"  : "";
+                        String content = pTag.getContent() != null ?  " content='" + pTag.getContent()+"'" : "";
+                        String name = pTag.getName() != null ? " name='" + pTag.getName()+"'" : "";
+
+                        injectMetaTag += 
+                        "<meta "
+                        +property
+                        +content
+                        +name
+                        + "/>";
                     }
 
                     // platformogTag.getStoreAssets().stream()
