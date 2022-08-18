@@ -1,4 +1,9 @@
 ##################################################
+# proxy-service-1.0.5 | 18-August-2022
+##################################################
+1. add new enum CoverImageUrl for storeAssets (note: alter table notes in product service)
+
+##################################################
 # proxy-service-1.0.4 | 15-July-2022
 ##################################################
 ALTER TABLE symplified.platform_og_tag ADD property varchar(100) NULL;
