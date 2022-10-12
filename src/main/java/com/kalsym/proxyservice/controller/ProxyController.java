@@ -158,7 +158,7 @@ public class ProxyController {
                     .orElse(null);
 
                     //handling error for null og tag title
-                    String newOgTitle = platformOgTagTitle == null ?"":platformOgTagTitle.getContent();
+                    String newOgTitle = platformOgTagTitle.equals(null)?"":platformOgTagTitle.getContent();
 
                     ogTitle = newOgTitle;
                     headTitle = newOgTitle;
