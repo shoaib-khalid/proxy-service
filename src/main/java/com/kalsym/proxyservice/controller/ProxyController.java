@@ -157,7 +157,7 @@ public class ProxyController {
 
                     // platformogTag.getStoreAssets().stream()
                     PlatformOgTag platformOgTagTitle = platformogTag.stream()
-                    .filter(m -> m.getProperty().equals("og:title"))
+                    .filter(m -> m.getProperty() != null && m.getProperty().equals("og:title"))
                     .findAny()
                     .orElse(null);
 
