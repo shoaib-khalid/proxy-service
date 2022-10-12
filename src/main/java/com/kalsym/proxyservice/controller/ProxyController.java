@@ -124,7 +124,11 @@ public class ProxyController {
                 headTitle = platformname;
                 
                 //get platformOgTag details
+                LogUtil.info("", "getPlatformId", "Response with  getPlatformId:::::" , platformconfig.getPlatformId());
+
                 List<PlatformOgTag> platformogTag = platformOgTagRepository.findByPlatformId(platformconfig.getPlatformId());
+
+                LogUtil.info("", "platformogTag.size()", "Response with  platformogTag.size():::::" , Integer.toString(platformogTag.size()));
 
                 //get platformOgTag details
                 if(platformogTag.size() > 0){
@@ -171,6 +175,8 @@ public class ProxyController {
 
                     ogTitle = newOgTitle;
                     headTitle = newOgTitle;
+                    LogUtil.info("", "PROXY", "Response with  ogTitle:::::" , ogTitle);
+
                 }
 
             }
