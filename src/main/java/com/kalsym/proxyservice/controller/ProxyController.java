@@ -157,8 +157,11 @@ public class ProxyController {
                     .findAny()
                     .orElse(null);
 
-                    ogTitle = platformOgTagTitle.getContent();
-                    headTitle = platformOgTagTitle.getContent();
+                    //handling error for null og tag title
+                    String newOgTitle = platformOgTagTitle == null ?"":platformOgTagTitle.getContent();
+
+                    ogTitle = newOgTitle;
+                    headTitle = newOgTitle;
                 }
 
             }

@@ -1,4 +1,8 @@
 ##################################################
+# proxy-service-1.0.6 | 12-October-2022
+##################################################
+1. Handling error for null value of ogtitile
+##################################################
 # proxy-service-1.0.5 | 18-August-2022
 ##################################################
 1. add new enum CoverImageUrl for storeAssets (note: alter table notes in product service)
