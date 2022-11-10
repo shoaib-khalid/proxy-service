@@ -1,4 +1,8 @@
 ##################################################
+# proxy-service-1.0.7 | 11-November-2022
+##################################################
+1. Handle error if there is no data in platform config
+##################################################
 # proxy-service-1.0.6 | 12-October-2022
 ##################################################
 1. Handling error for null value of ogtitile

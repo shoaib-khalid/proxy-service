@@ -57,7 +57,7 @@ public class SwaggerConfig {
                 .description("Used for proxy service")
                 .termsOfServiceUrl("not added yet")
                 .license("not added yet")
-                .licenseUrl("").version("1.0").build();
+                .licenseUrl("").version("1.0.7").build();
     }
 
     public static final String DEFAULT_INCLUDE_PATTERN = "/.*";

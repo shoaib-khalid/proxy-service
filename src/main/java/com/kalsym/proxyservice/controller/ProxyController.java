@@ -91,8 +91,8 @@ public class ProxyController {
             LogUtil.info("", "PROXY", "Response with  referrer" , request.getHeader("referrer"));
 
 
-            String kubernetessvcurl;
-            String kubernetessvcport;
+            String kubernetessvcurl="";
+            String kubernetessvcport="";
             String platformname;
             String platformlogo;
             String substringStoreDomain = null;
@@ -188,50 +188,52 @@ public class ProxyController {
 
                 String platformtype = "store-front";
                 List<PlatformConfig> bodyNew = platformConfigService.getQueryWildcardPlatformConfig(domain,platformtype);
-                PlatformConfig platformconfig = bodyNew.get(0);
-                kubernetessvcurl = platformconfig.getKubernetesSvcUrl();
-                kubernetessvcport = platformconfig.getKubernetesSvcPort();
-                platformname = platformconfig.getPlatformName();
-                platformlogo = assetServiceUrl+platformconfig.getPlatformLogo();
 
+                if(bodyNew.size()>0){
 
-                List<Store> storeDetails = storeService.getStore(substringStoreDomain);
-                if(storeDetails.size()>0){
-
-                    Store store = storeDetails.get(0);
-                    // storename = store.getName();
-                    // storedescription = store.getStoreDescription().replaceAll("<[^>]*>", "").replaceAll("'", "");//sanitize html tag and remove ' 
+                    PlatformConfig platformconfig = bodyNew.get(0);
+                    kubernetessvcurl = platformconfig.getKubernetesSvcUrl();
+                    kubernetessvcport = platformconfig.getKubernetesSvcPort();
+                    platformname = platformconfig.getPlatformName();
+                    platformlogo = assetServiceUrl+platformconfig.getPlatformLogo();
     
-                    ogDescription = store.getStoreDescription().replaceAll("<[^>]*>", "").replaceAll("'", "");//sanitize html tag and remove '
-                    ogTitle = store.getName();
-                    headTitle = "Welcome to "+ogTitle;
-
-
-                    StoreAssets storeasset = store.getStoreAssets().stream()
-                    .filter(m -> StoreAssetType.LogoUrl.equals(m.getAssetType()))
-                    .findAny()
-                    .orElse(null);
-
-                    
-                    if(storeasset == null){
-                        // storeLogo = platformlogo;
-                        ogImageUrl = platformlogo;
-
-                    } else{
-                        ogImageUrl = assetServiceUrl+storeasset.getAssetUrl();
-
-                        // storeLogo = assetServiceUrl+storeasset.getAssetUrl();
+    
+                    List<Store> storeDetails = storeService.getStore(substringStoreDomain);
+                    if(storeDetails.size()>0){
+    
+                        Store store = storeDetails.get(0);
+                        // storename = store.getName();
+                        // storedescription = store.getStoreDescription().replaceAll("<[^>]*>", "").replaceAll("'", "");//sanitize html tag and remove ' 
+        
+                        ogDescription = store.getStoreDescription().replaceAll("<[^>]*>", "").replaceAll("'", "");//sanitize html tag and remove '
+                        ogTitle = store.getName();
+                        headTitle = "Welcome to "+ogTitle;
+    
+    
+                        StoreAssets storeasset = store.getStoreAssets().stream()
+                        .filter(m -> StoreAssetType.LogoUrl.equals(m.getAssetType()))
+                        .findAny()
+                        .orElse(null);
+    
                         
+                        if(storeasset == null){
+                            // storeLogo = platformlogo;
+                            ogImageUrl = platformlogo;
+    
+                        } else{
+                            ogImageUrl = assetServiceUrl+storeasset.getAssetUrl();
+    
+                            // storeLogo = assetServiceUrl+storeasset.getAssetUrl();
+                            
+                        }
+    
+                    } else{
+    
+                        ogTitle = platformname;
+                        ogDescription = platformname;
+                        ogImageUrl = platformname;
                     }
-
-                } else{
-
-                    ogTitle = platformname;
-                    ogDescription = platformname;
-                    ogImageUrl = platformname;
                 }
-      
-
 
             }
 
